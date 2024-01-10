@@ -10,12 +10,9 @@ const useLogic = () => {
 	const [loadingButton, setLoadingButton] = useState({ id: '', status: false });
 	const now = new Date();
 
-	useEffect(() => {
-		// const storedTrackNumbers = JSON.parse(localStorage.getItem('trackNumbers') || '[]');
-		// setTrackNumbers(storedTrackNumbers);
-	}, []);
-
 	const handleAddTrackNumber = () => {
+		if (inputValue === '') return;
+
 		const updatedTrackNumbers = [...trackNumbers, { number: inputValue, status: 0, date: dateFormat(now, 'yyyy-mm-dd, h:MM'), picture: [''] }];
 		setTrackNumbers(updatedTrackNumbers);
 
@@ -30,6 +27,7 @@ const useLogic = () => {
 	};
 
 	const handleButtonClick = () => {};
+
 	return { inputValue, setInputValue, handleAddTrackNumber, trackNumbers, loadingButton, setLoadingButton, handleButtonClick };
 };
 
