@@ -18,10 +18,6 @@ import { useEffect } from 'react';
 export default function Home() {
 	const logic = useLogic();
 
-	useEffect(() => {
-		console.log(logic.trackNumbers);
-	}, [logic.trackNumbers]);
-
 	return (
 		<main className='flex min-h-screen gap-4 flex-col items-center '>
 			<div className='max-w-xl flex min-h-screen  items-center gap-4 flex-col'>
