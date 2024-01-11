@@ -1,7 +1,7 @@
 // logic with local storage
 import dateFormat, { masks } from 'dateformat';
 import { toast } from 'sonner';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { TrackNumberDataType } from '@/app/types';
 
 const useLogic = () => {
@@ -9,6 +9,7 @@ const useLogic = () => {
 	const [inputValue, setInputValue] = useState<string>('');
 	const [loadingButton, setLoadingButton] = useState({ id: '', status: false });
 	const now = new Date();
+	const inputRef = useRef<HTMLInputElement>(null);
 
 	useEffect(() => {
 		// const storedTrackNumbers = JSON.parse(localStorage.getItem('trackNumbers') || '[]');
@@ -16,6 +17,7 @@ const useLogic = () => {
 	}, []);
 
 	const handleAddTrackNumber = () => {
+		if (inputValue === '') return;
 		const updatedTrackNumbers = [...trackNumbers, { number: inputValue, status: 0, date: dateFormat(now, 'yyyy-mm-dd, h:MM'), picture: [''] }];
 		setTrackNumbers(updatedTrackNumbers);
 
@@ -27,10 +29,11 @@ const useLogic = () => {
 			},
 		});
 		setInputValue('');
+		inputRef.current?.focus();
 	};
 
 	const handleButtonClick = () => {};
-	return { inputValue, setInputValue, handleAddTrackNumber, trackNumbers, loadingButton, setLoadingButton, handleButtonClick };
+	return { inputRef, inputValue, setInputValue, handleAddTrackNumber, trackNumbers, loadingButton, setLoadingButton, handleButtonClick };
 };
 
 export default useLogic;
