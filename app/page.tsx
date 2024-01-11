@@ -43,7 +43,9 @@ export default function Home() {
 				<div className='flex w-full max-w-sm items-center space-x-2'>
 					<Input
 						value={logic.inputValue}
+						ref={logic.inputRef}
 						onChange={(e) => logic.setInputValue(e.target.value)}
+						onKeyDown={(e) => e.key === 'Enter' && logic.handleAddTrackNumber()}
 						type='email'
 						placeholder='Илгээмжийн дугаар (Track Number)'
 					/>
