@@ -42,6 +42,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(({ className, va
 		<>
 			<Comp disabled={loading} className={cn(buttonVariants({ variant, size, className }))} ref={ref} {...props}>
 				{loading ? <IoReloadOutline className={'animate-spin'} /> : ''}
+				{props.children}
 			</Comp>
 		</>
 	);
