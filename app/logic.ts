@@ -1,39 +1,109 @@
-// logic with local storage
-import dateFormat, { masks } from 'dateformat';
+import { TrackNumberDataType, type TrackTypes } from '@/app/types';
+import useAuth from '@/hooks/useAuth';
+import { supabase } from '@/lib/initSupabase';
+import dateFormat from 'dateformat';
+import {
+	useEffect,
+	useRef,
+	useState,
+	type Dispatch,
+	type MutableRefObject,
+	type SetStateAction,
+} from 'react';
 import { toast } from 'sonner';
-import { useEffect, useState, useRef } from 'react';
-import { TrackNumberDataType } from '@/app/types';
 
-const useLogic = () => {
+export type CoreLogic = {
+	inputRef: MutableRefObject<HTMLInputElement | null>;
+	inputValue: string;
+	setInputValue: Dispatch<SetStateAction<string>>;
+	handleAddTrackNumber: () => void;
+	trackNumbers: TrackNumberDataType[];
+	loadingButton: { id: string; status: boolean };
+	setLoadingButton: Dispatch<SetStateAction<{ id: string; status: boolean }>>;
+	handleTabChange: (tab: TrackTypes) => void;
+};
+
+const useLogic = (): CoreLogic => {
 	const [trackNumbers, setTrackNumbers] = useState<TrackNumberDataType[]>([]);
 	const [inputValue, setInputValue] = useState<string>('');
 	const [loadingButton, setLoadingButton] = useState({ id: '', status: false });
 	const now = new Date();
 	const inputRef = useRef<HTMLInputElement>(null);
+	const { user } = useAuth();
+	const [hasFetched, setHasFetched] = useState<boolean>(false);
+	const [selectedTab, setSelectedTab] = useState<TrackTypes>(
+		'all' as TrackTypes,
+	);
+	const [added, setAdded] = useState<number>(0);
 
 	useEffect(() => {
-		// const storedTrackNumbers = JSON.parse(localStorage.getItem('trackNumbers') || '[]');
-		// setTrackNumbers(storedTrackNumbers);
-	}, []);
+		const fetchData = async () => {
+			if (user?.id && selectedTab && !hasFetched) {
+				const { data, error } = await supabase
+					.from('trackNumbers')
+					.select('*')
+					.eq('recipient', user.id);
+				// TODO: Add filter based on selectedTab
 
-	const handleAddTrackNumber = () => {
+				if (error) {
+					console.log('error', error);
+				} else {
+					setTrackNumbers(data || []);
+					setHasFetched(true);
+				}
+			}
+		};
+
+		fetchData();
+	}, [selectedTab, user, hasFetched]);
+
+	const handleTabChange = (tab: TrackTypes) => {
+		setSelectedTab(tab);
+	};
+
+	const handleAddTrackNumber = async () => {
 		if (inputValue === '') return;
-		const updatedTrackNumbers = [...trackNumbers, { number: inputValue, status: 0, date: dateFormat(now, 'yyyy-mm-dd, h:MM'), picture: [''] }];
-		setTrackNumbers(updatedTrackNumbers);
+
+		const { error } = await supabase.from('trackNumbers').insert({
+			trackNumber: inputValue,
+			status: {
+				text: 'Бүртгэгдсэн',
+				id: 0,
+			},
+			recipient: user.id,
+			createdDate: dateFormat(now, 'yyyy-mm-dd, h:MM'),
+		});
+
+		if (error) {
+			console.log('error', error);
+			return;
+		}
 
 		toast('Илгээмжийн дугаар бүртгэгдлээ', {
 			description: dateFormat(now, 'yyyy-mm-dd, h:MM'),
 			action: {
 				label: 'Цуцлах',
-				onClick: () => console.log('Undo'),
+				onClick: () => {
+					toast('Цуцлах үед алдаа гарлаа');
+				},
 			},
 		});
+
+		setAdded((prev) => prev + 1);
 		setInputValue('');
 		inputRef.current?.focus();
 	};
 
-	const handleButtonClick = () => {};
-	return { inputRef, inputValue, setInputValue, handleAddTrackNumber, trackNumbers, loadingButton, setLoadingButton, handleButtonClick };
+	return {
+		inputRef,
+		inputValue,
+		setInputValue,
+		handleAddTrackNumber,
+		trackNumbers,
+		loadingButton,
+		setLoadingButton,
+		handleTabChange,
+	};
 };
 
 export default useLogic;
