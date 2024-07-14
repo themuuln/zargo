@@ -1,14 +1,13 @@
 import { ThemeProvider } from '@/components/theme-provider';
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
 import './globals.css';
 import { Toaster } from '@/components/ui/sonner';
-
-const inter = Inter({ subsets: ['latin'] });
+import Header from '@/components/header';
+import { inter } from '@/utils/fonts';
 
 export const metadata: Metadata = {
-	title: 'Fast Cargo',
-	description: 'Fast Cargo Client Web',
+	title: 'Zargo',
+	description: 'Cargo Web App for Clients code by @themuuln',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -16,6 +15,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 		<html lang='en'>
 			<body className={inter.className}>
 				<ThemeProvider attribute='class' defaultTheme='dark' enableSystem disableTransitionOnChange>
+					<Header />
 					{children}
 					<Toaster />
 				</ThemeProvider>

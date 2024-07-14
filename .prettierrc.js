@@ -7,6 +7,6 @@ module.exports = {
 	jsxSingleQuote: true,
 	useTabs: true,
 	tabWidth: 2,
-	printWidth: 150,
+	printWidth: 80,
 	trailingComma: 'all',
 };
