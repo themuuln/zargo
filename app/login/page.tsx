@@ -24,8 +24,7 @@ export default function Login() {
 				password: password,
 			});
 			if (error) throw error;
-			// Redirect to dashboard or home page after successful login
-			router.push('/dashboard');
+			router.push('/');
 		} catch (error: any) {
 			setError(error.message);
 		}

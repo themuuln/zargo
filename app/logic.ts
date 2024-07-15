@@ -41,14 +41,14 @@ const useLogic = (): CoreLogic => {
 			if (user?.id && selectedTab && !hasFetched) {
 				const { data, error } = await supabase
 					.from('trackNumbers')
-					.select('*')
+					.select('status, recipient, trackNumber, createdDate')
 					.eq('recipient', user.id);
-				// TODO: Add filter based on selectedTab
 
 				if (error) {
 					console.log('error', error);
 				} else {
-					setTrackNumbers(data || []);
+					// @ts-ignore
+					setTrackNumbers(data);
 					setHasFetched(true);
 				}
 			}
@@ -63,6 +63,11 @@ const useLogic = (): CoreLogic => {
 
 	const handleAddTrackNumber = async () => {
 		if (inputValue === '') return;
+
+		if (user?.role !== 'authenticated') {
+			toast.error('Та нэвтэрнэ үү');
+			return;
+		}
 
 		const { error } = await supabase.from('trackNumbers').insert({
 			trackNumber: inputValue,
